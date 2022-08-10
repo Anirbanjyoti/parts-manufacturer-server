@@ -10,17 +10,19 @@ app.use(cors());
 app.use(express.json());
 
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xlaxhk5.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q8wwfy9.mongodb.net/?retryWrites=true&w=majority`;
+
+const client = new MongoClient(uri, { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true, 
+    serverApi: ServerApiVersion.v1 
 });
 
 
 async function run() {
     try {
 
+        
     }
     finally {
   
@@ -29,11 +31,13 @@ async function run() {
   
   run().catch(console.dir);
   
+//   DB_USER=AutoPoint
+//   DB_PASS=thDJ2Z45V8jUwCgm
   
   app.get('/', (req, res) => {
-    res.send('Hello From Auto Point is Running!')
+    res.send('Auto Point is Running!')
   })
   
   app.listen(port, () => {
-    console.log(`Doctors App listening on port ${port}`)
+    console.log(`Auto App listening on port ${port}`)
   })
