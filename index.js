@@ -21,11 +21,17 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        const serviceCollection = client.db('AutoPoint').collection('tools');
-
+        const toolCollection = client.db('AutoPoint').collection('tools');
+        const reviewCollection = client.db('AutoPoint').collection('reviews');
+        //  Get all tools data
         app.get('/tools', async (req, res) => {
-            const tools = await serviceCollection.find().toArray();
+            const tools = await toolCollection.find().toArray();
             res.send(tools);
+          });
+        //  Get all reviews data
+        app.get('/reviews', async (req, res) => {
+            const reviews = await reviewCollection.find().toArray();
+            res.send(reviews);
           });
     }
     finally {
