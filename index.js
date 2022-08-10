@@ -21,8 +21,12 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+        const serviceCollection = client.db('AutoPoint').collection('tools');
 
-        
+        app.get('/tools', async (req, res) => {
+            const tools = await serviceCollection.find().toArray();
+            res.send(tools);
+          });
     }
     finally {
   
