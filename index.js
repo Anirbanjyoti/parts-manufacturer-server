@@ -33,9 +33,17 @@ async function run() {
             const reviews = await reviewCollection.find().toArray();
             res.send(reviews);
           });
+    // Post API-- to create / add Review to all service
+    app.post("/review", async (req, res) => {
+        const newReview = req.body;
+        const result = await reviewCollection.insertOne(newReview);
+        res.send(result);
+      });
+
+
     }
     finally {
-  
+        // 
     }
   }
   
