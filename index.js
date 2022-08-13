@@ -106,8 +106,20 @@ async function run() {
       );
       res.send({ result, token });
     });
+        // UPsert admin field to user Collection ANd denied unauthorized access by verifyJWT
+        app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+          const email = req.params.email;
+          const filter = { email: email };
+          const updateDoc = {
+            $set: { role: "admin" },
+          };
+          const result = await userCollection.updateOne(filter, updateDoc);
+          res.send(result);
+        });
 
-    
+
+
+
   } finally {
     //
   }
