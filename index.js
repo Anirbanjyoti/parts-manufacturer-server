@@ -130,7 +130,18 @@ async function run() {
       req.status(403).send({message: 'forbidden'})
     }
     });
-
+// Get All Bookings user basis data for Dashboard
+app.get("/order", verifyJWT, async (req, res) => {
+  const email = req.query.email;
+  const decodedEmail = req.decoded.email;
+  if (email === decodedEmail) {
+    const query = { email: email };
+    const orders = await shippingCollection.find(query).toArray();
+    return res.send(orders);
+  } else {
+    return res.status(403).send({ message: "Forbidden Access" });
+  }
+});
 
 
   } finally {
