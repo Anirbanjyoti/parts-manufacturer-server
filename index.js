@@ -41,6 +41,7 @@ async function run() {
       .db("AutoPoint")
       .collection("shippingDetails");
     const userCollection = client.db("AutoPoint").collection("users");
+    const postCollection = client.db("AutoPoint").collection("blogPosts");
 
     //  Get all tools data
     app.get("/tools", async (req, res) => {
@@ -63,6 +64,17 @@ async function run() {
     app.post("/review", async (req, res) => {
       const newReview = req.body;
       const result = await reviewCollection.insertOne(newReview);
+      res.send(result);
+    });
+        //  Get all POsts data
+        app.get("/post", async (req, res) => {
+          const posts = await postCollection.find().toArray();
+          res.send(posts);
+        });
+    // Post API-- to create / add Posts to all review
+    app.post("/post", async (req, res) => {
+      const newPost = req.body;
+      const result = await postCollection.insertOne(newPost);
       res.send(result);
     });
     // Post API-- to create / add shippingDetails to all shippingDetails
@@ -114,7 +126,7 @@ async function run() {
       res.send({ admin: isAdmin })
     }) 
     // UPsert admin field to user Collection ANd denied unauthorized access by verifyJWT
-    app.put("/user/admin/:email", verifyJWT, async (req, res) => {
+    app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       const requester = req.decoded.email;
       const requesterAccount = await userCollection.findOne({email: requester});
@@ -130,7 +142,7 @@ async function run() {
       req.status(403).send({message: 'forbidden'})
     }
     });
-// Get All Bookings user basis data for Dashboard
+// Get All orders user basis data for Dashboard
 app.get("/order", verifyJWT, async (req, res) => {
   const email = req.query.email;
   const decodedEmail = req.decoded.email;
