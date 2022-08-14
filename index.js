@@ -186,6 +186,9 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
   res.send("Auto Point is Running!");
 });
+app.get("/hero", (req, res) => {
+  res.send("Auto Point is Running on Heroku!");
+});
 
 app.listen(port, () => {
   console.log(`Auto App listening on port ${port}`);
