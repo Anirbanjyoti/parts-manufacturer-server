@@ -49,11 +49,25 @@ async function run() {
       res.send(tools);
     });
     //  create API to get single data
-    app.get("/tools/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-      const tool = await toolCollection.findOne(query);
-      res.send(tool);
+    /**
+     * hence i have used try catch to avoid 'UnhandledPromiseRejectionWarning':
+    */
+    app.get("/tools/:id", async (req, res, next) => {
+      try{
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const tool = await toolCollection.findOne(query);
+        res.send(tool);
+      }catch(err){
+        next(err);
+      }
+
+    });
+    // Post API-- to create / add tool to all tools
+    app.post("/tools", async (req, res) => {
+      const newTool = req.body;
+      const result = await toolCollection.insertOne(newTool);
+      res.send(result);
     });
     //  Get all reviews data
     app.get("/reviews", async (req, res) => {
@@ -66,12 +80,12 @@ async function run() {
       const result = await reviewCollection.insertOne(newReview);
       res.send(result);
     });
-        //  Get all POsts data
-        app.get("/post", async (req, res) => {
-          const posts = await postCollection.find().toArray();
-          res.send(posts);
-        });
-    // Post API-- to create / add Posts to all review
+    //  Get all POsts data
+    app.get("/post", async (req, res) => {
+      const posts = await postCollection.find().toArray();
+      res.send(posts);
+    });
+    // Post API-- to create / add Posts to all Posts
     app.post("/post", async (req, res) => {
       const newPost = req.body;
       const result = await postCollection.insertOne(newPost);
@@ -119,43 +133,46 @@ async function run() {
       res.send({ result, token });
     });
     // Find email which role is admin
-    app.get('/admin/:email', async (req, res) => {
+    app.get("/admin/:email", async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
-      const isAdmin = user.role === 'admin';
-      res.send({ admin: isAdmin })
-    }) 
+      const isAdmin = user.role === "admin";
+      res.send({ admin: isAdmin });
+    });
     // UPsert admin field to user Collection ANd denied unauthorized access by verifyJWT
-    app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+    app.put("/user/admin/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
       const requester = req.decoded.email;
-      const requesterAccount = await userCollection.findOne({email: requester});
+      const requesterAccount = await userCollection.findOne({
+        email: requester,
+      });
 
-      if(requesterAccount.role === 'admin'){
-      const filter = { email: email };
-      const updateDoc = {
-        $set: { role: 'admin' },
-      };
-      const result = await userCollection.updateOne(filter, updateDoc);
-      res.send(result);
-    }else{
-      req.status(403).send({message: 'forbidden'})
-    }
+      if (requesterAccount.role === "admin") {
+        const filter = { email: email };
+        const updateDoc = {
+          $set: { role: "admin" },
+        };
+        const result = await userCollection.updateOne(filter, updateDoc);
+        res.send(result);
+      } else {
+        req.status(403).send({ message: "forbidden" });
+      }
     });
-// Get All orders user basis data for Dashboard
-app.get("/order", verifyJWT, async (req, res) => {
-  const email = req.query.email;
-  const decodedEmail = req.decoded.email;
-  if (email === decodedEmail) {
-    const query = { email: email };
-    const orders = await shippingCollection.find(query).toArray();
-    return res.send(orders);
-  } else {
-    return res.status(403).send({ message: "Forbidden Access" });
-  }
-});
+    // Get All orders user basis data for Dashboard
+    app.get("/order", verifyJWT, async (req, res) => {
+      //  je shdhu mstro login korsa ache tar info onujayi tar ordergulo dekhabe.
+      const email = req.query.email;
+      const decodedEmail = req.decoded.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const orders = await shippingCollection.find(query).toArray();
+        return res.send(orders);
+      } else {
+        return res.status(403).send({ message: "Forbidden Access" });
+      }
+    });
 
-
+    
   } finally {
     //
   }
